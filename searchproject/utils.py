@@ -1,33 +1,46 @@
 # coding=utf8
 import requests
-from rest_framework.utils import json
 
 
-# def search(word):
-#     search_result = requests.get(
-#         url=f'https://docs.microsoft.com/api/'
-#             f'search?search={word}&locale=ru-ru&'
-#             f'scoringprofile=search_for_en_us_a_b_test&'
-#             f'facet=category&%24skip=0&%24top=10')
-#     search_result = search_result.json()
-#     print(search_result)
-#     return search_result
+def sendrequest(word, top, skip):
 
-def search(word):
-    results_count = 50
-    count = 0
-    top = 25
-    skip = 0
-    search_result = []
-    while top*count < results_count:
-        search_res = requests.get(
-            url=f'https://docs.microsoft.com/api/'
+    """Функция, отправляющая get запрос по url и возвращающая десериализованный словарь"""
+
+    search_res = requests.get(
+        url=f'https://docs.microsoft.com/api/'
             f'search?search={word}&locale=ru-ru&'
             f'scoringprofile=search_for_en_us_a_b_test&'
             f'facet=category&%24skip={skip}&%24top={top}')
-        search_res = search_res.json()          #
-        search_result += search_res['results']
+    search_res = search_res.json()
+    print(search_res)
 
-        skip += 10
-        count += 1
+    return search_res
+
+
+def search(word, limit):
+
+    """Функция поиска, принимающая аргументами искомое слово и
+    количество необходимых результатов в выдаче"""
+
+    results_count = int(limit)
+    count = 1
+    top = 25
+    skip = 0
+    top_result = top
+    search_result = []
+    if results_count > top:
+        while top * count <= results_count and top > 0 and top_result <= results_count:
+            if results_count - top_result >= top:
+                search_result += sendrequest(word, top, skip)['results']
+                skip = count * 10
+                top_result += top
+                count += 1
+            else:
+                search_result += sendrequest(word, top, skip)['results']
+                top = results_count - top_result
+                top_result += top
+    else:
+        top = results_count
+        search_result += sendrequest(word, top, skip)['results']
+
     return search_result

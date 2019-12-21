@@ -5,9 +5,10 @@ import json
 from . import utils
 
 
+#def search_view(request, word, limit):
 def search_view(request, word, limit):
 
-    search_result = json.dumps(utils.search(word), ensure_ascii=False)
+    search_result = json.dumps(utils.search(word, limit), ensure_ascii=False)
 
     # return JsonResponse(search_result)
     return HttpResponse(content=search_result,
