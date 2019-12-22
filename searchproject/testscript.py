@@ -11,10 +11,8 @@ class SearchTest(unittest.TestCase):
         при отсутствии вхождения выбрасывает AssertionError"""
 
         result_list = utils.search(word=word, limit=limit)
-
         for single_dict in result_list:
-            if single_dict['title']:
-                self.assertIn(word, single_dict['title'].lower(), msg='Word not found')
+            self.assertIn(word, single_dict['title'].lower(), msg='Word not found')
 
 
 if __name__ == '__main__':
